@@ -1,8 +1,9 @@
 import chess
 import chess.svg
 import os
-import cairocffi
-from cairosvg import svg2png
+import wand.image
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPM
 class Game:
     def __init__(self):
         self.board = chess.Board()
@@ -12,14 +13,10 @@ class Game:
         except chess.InvalidMoveError:
             return False
     def create_image(self) -> None:
-        board_svg_code = chess.svg.board(board=self.board)
-        svg2png(bytestring=board_svg_code, write_to='board.png')
-        #board_svg_file = open('boardsvg.svg', 'w')
-        #board_svg_file.write(chess.svg.board(board=self.board, size=350))
-        #board_svg_file.close()
-        #drawing = svg2rlg('boardsvg.svg')
-        #renderPM.drawToFile(drawing, 'board.png', fmt='PNG')
-        #os.remove('boardsvg.svg')
+        with wand.image.Image(blob=chess.svg.board(board=self.board).encode('utf-8'), format="svg") as image:
+            png_image = image.make_blob("png")
+            with open("board.png", 'wb') as board_image:
+                board_image.write(png_image)
 
 game = Game()
 game.create_image()
