@@ -8,6 +8,11 @@ class GameManager:
         self.color = choice((chess.WHITE, chess.BLACK))
         self.color_text = 'Белые' if self.color == chess.WHITE else 'Черные'
 
+    @staticmethod
+    def random_color():
+        color = choice((chess.WHITE, chess.BLACK))
+        color_str = 'Белые' if color == chess.WHITE else 'Черные'
+        return color, color_str
     def is_legal_move(self, move: str) -> bool:
         try:
             return self.board.is_legal(self.board.parse_san(move))
@@ -19,4 +24,8 @@ class GameManager:
             #with open("board.png", 'wb') as board_image:
                 #board_image.write(png_image)
         return png_image
+    def do_move(self):
+        pass
+    def opponent_do_move(self):
+        pass
 
