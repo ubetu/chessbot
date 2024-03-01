@@ -1,9 +1,9 @@
-start = f"""Привет! Это бот для игры в шахматы и практики шахматной нотации. Твой ID: %id
+start = f"""Привет! Это бот для игры в шахматы и практики шахматной нотации. Твой username: %username
                Для начала игры нажми Новая игра"""
 new_game_button = 'Новая игра'
-enter_opponent_id = 'Введите ID человека, с которым в вы хотите сыграть'
-incorrect_id = "Некорректный ID. Пожалуйста, введите ID еще раз"
-ure_challenged = 'С вами хочет играть %id'
+enter_opponent_username = 'Введите username человека, с которым в вы хотите сыграть'
+incorrect_username = "Некорректный username. Пожалуйста, введите ID еще раз"
+ure_challenged = 'С вами хочет играть %username'
 new_game_started = 'Начинаем'
 your_color = 'Твой цвет - %color'
 

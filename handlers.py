@@ -22,7 +22,7 @@ async def connecting(message:Message, state:FSMContext):
         await bot.send_message(id=message.text, text=text.ure_challenged.format(id=message.from_user.id), reply_markup=kb.ask_to_join_kb)
         await state.update_data(opponent_id=int(message.text), answered=False)
     except:
-        await message.answer(text.incorrect_id)
+        await message.answer(text.incorrect_username)
 
 @router_main.callback_query(ConnectionCallback.filter())
 async def responcing_to_connect_try(callback:types.CallbackQuery, callback_data:ConnectionCallback, state:FSMContext):

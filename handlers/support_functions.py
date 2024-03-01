@@ -17,16 +17,16 @@ class IsOurMove(BaseFilter):
         return False
 
 
-async def send_board_photo(user_id: int, state: FSMContext) -> None:
+async def send_board_photo(my_username: str, opponent_username: str, state: FSMContext) -> None:
     """Отправляет картинку шахматного поля по user_id.
        Можно предавать state Любого из 2 игроков"""
 
     user_data = await state.get_data()
     photo_bytes = user_data['game'].create_image()
-    photo_url = str(user_id) + '.png'
+    photo_url = my_username + '.png'
 
     with open(photo_url, 'wb') as photo:
         photo.write(photo_bytes)
-
-    await bot.send_photo(photo_url)
+        await bot.send_photo(chat_id=my_username, photo=photo_url)
+        await bot.send_photo(chat_id=opponent_username, photo=photo_url)
     os.remove(photo_url)
