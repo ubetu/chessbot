@@ -25,18 +25,36 @@ router_playing.message.filter(StateFilter(GameFSM.playing))
 async def move_reaction(message:Message, state:FSMContext):
     user_data = await state.get_data()
     game: GameManager = user_data['game']
-    if game.is_our_turn(user_data['color']):
+
+    if game.is_our_turn(user_data['color']): # если наш ход
         result, winner = game.is_finished()
-        if result:
-            await message.answer(text='')# игра закончена
-            await bot.send_message(id=user_data['opponent'], text='')
+        if game.is_legal_move(move=message.text):
+            game.do_move(message.text)
+
+            await send_board_photo(message.from_user.id, state)#в наш чат
+            await send_board_photo(user_data['opponent'], state)# в чат оппоннта
+            await bot.send_message(id=user_data['opponent'], message=message)# повторяем ход в чат противника
+
         else:
-            if game.is_legal_move(message.text):
-                game.do_move(message.text)
-            else:
-                #неккоректный ход
-                pass
+            await message.answer(text.incorrect_move)
     else:
-        await message.answer('не твой ход')
+        await message.answer(text.not_your_turn)z
+
+    result, winner = game.is_finished()
+    if result == game.RES_WIN:  # кто-то выиграл
+        result_text_we, result_text_opponent = (text.ure_wined, text.ure_lost) if winner == user_data['color'] \
+            else (text.ure_lost, text.ure_lost)
+        await message.answer(text=result_text_we + text.else_one_game, reply_markup=kb.ask_to_join_kb(message))
+        await bot.send_message(id=user_data['opponent'], text=result_text_opponent + text.else_one_game)
+
+    elif result == game.RES_DRAW:
+        await message.answer(text=text.draw + text.else_one_game, reply_markup=kb.ask_to_join_kb(message))
+        await bot.send_message(id=user_data['opponent'], text=result.text.draw + text.else_one_game)
+
+
+
+      # ничья
+        await message.answer(text=text.draw + text.else_one_game)
+        await bot.send_message(id=user_data['opponent'], text=text.draw + text.else_one_game)
 
 

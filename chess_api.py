@@ -6,10 +6,6 @@ from typing import Any
 from random import choice
 
 class GameManager:
-    MOVE_SYNTAX_ERROR = -1
-    MOVE_ILLEGAL = -2
-    MOVE_AMBIGUOUS = -3
-
     RES_WIN = 1
     RES_PLAYING = 0
     RES_DRAW = 2
@@ -26,12 +22,8 @@ class GameManager:
     def is_legal_move(self, move: str) -> int:
         try:
             return self.board.is_legal(self.board.parse_san(move))
-        except chess.InvalidMoveError:
-            return self.MOVE_SYNTAX_ERROR
-        except chess.IllegalMoveError:
-            return self.MOVE_ILLEGAL
-        except chess.AmbiguousMoveError:
-            return self.MOVE_AMBIGUOUS
+        except :
+            return False
 
     def create_image(self) -> bytes:
         with wand.image.Image(blob=chess.svg.board(board=self.board).encode('utf-8'), format="svg") as image:

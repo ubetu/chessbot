@@ -28,14 +28,14 @@ async def connecting(message:Message, state:FSMContext):
 async def responcing_to_connect_try(callback:types.CallbackQuery, callback_data:ConnectionCallback, state:FSMContext):
     if callback_data.response == 'No':
         try:
-            await bot.send_message(id=callback_data.id_asker, text='Тебе отказали')
+            await bot.send_message(id=callback_data.id_opponent, text='Тебе отказали')
         except:
             pass
     else:
         await state.set_state(GameFSM.playing)
         color, color_str = chess_api.GameManager.random_color()
         game = chess_api.GameManager()
-        await state.update_data(opponent=callback_data.id_asker, color=color, game=game)
-        await bot.send_message(id=callback_data.id_asker, text='Согласился! Чтобы начать играть нажмите Начать игру',
+        await state.update_data(opponent=callback_data.id_opponent, color=color, game=game)
+        await bot.send_message(id=callback_data.id_opponent, text='Согласился! Чтобы начать играть нажмите Начать игру',
                                reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton(text='Начать игру',
                                                                 callback_data=ConnectionCallback(color=not color, game=game))]]))

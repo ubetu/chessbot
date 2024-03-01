@@ -18,6 +18,9 @@ class IsOurMove(BaseFilter):
 
 
 async def send_board_photo(user_id: int, state: FSMContext) -> None:
+    """Отправляет картинку шахматного поля по user_id.
+       Можно предавать state Любого из 2 игроков"""
+
     user_data = await state.get_data()
     photo_bytes = user_data['game'].create_image()
     photo_url = str(user_id) + '.png'
