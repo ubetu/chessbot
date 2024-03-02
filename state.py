@@ -1,52 +1,51 @@
-from asyncio import sleep
+from helpful.bot_creating import dp, bot
+
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
+from aiogram.fsm.storage.base import StorageKey
 
 class GameFSM(StatesGroup):
     connecting = State()
     playing = State()
     reconnecting = State()
 
-async def transition_to_reconnecting(state: FSMContext) -> None:
-    await state.set_state(GameFSM.reconnecting)
-    opponent_id = (await state.get_data())['opponent_id']
-    await state.set_data({'opponent_id': opponent_id})
-    await sleep(30)# добавить в connection для проверки согласия
-    user_data = await state.get_data()
-    if len(user_data.values()) == 1:
-        await state.clear()
+class Protect_state:
 
-class secure_state:
-    def __init__(self, opponent_state: FSMContext) -> None:
-        self.__opponent_state = opponent_state
+    @staticmethod
+    def __get_opponent_state(opponent_id: int) -> FSMContext:
+        opponent_storage_key = StorageKey(bot.id, opponent_id, opponent_id)
+        return FSMContext(storage=dp.storage, key=opponent_storage_key)
 
-    async def __rights_checking(self, username: str) -> bool:
-        opponent_data = await self.__opponent_state.get_data()
-        try:
-            return opponent_data['opponent_username'] == username
-        except:
-            return False
+    @classmethod
+    def __rights_checking(cls, my_id: int, opponent_data) -> bool:
+        if 'opponent_id' in opponent_data:
+            return opponent_data['opponent_id'] == my_id
+        return False
 
-    async def clear(self, username: str) -> None:
-        if self.__rights_checking(username):
-            await self.__opponent_state.clear()
+    @classmethod
+    async def clear(cls, my_id: int, opponent_id:int) -> None:
+        opponent_state = cls.__get_opponent_state(opponent_id)
+        opponent_data = await opponent_state.get_data()
+        if cls.__rights_checking(my_id, opponent_data):
+            await opponent_state.clear()
 
-    async def set_state(self, username: str, state:State) -> None:
-        if self.__rights_checking(username):
-            await self.__opponent_state.set_state(state)
+    @classmethod
+    async def set_state(cls, my_id: int, opponent_id:int, state: State) -> None:
+        opponent_state = cls.__get_opponent_state(opponent_id)
+        opponent_data = await opponent_state.get_data()
+        if cls.__rights_checking(my_id, opponent_data):
+            await opponent_state.set_state(state)
 
-    async def set_color(self, username: str, color) -> None:
-        if self.__rights_checking(username):
-            await self.__opponent_state.update_data(color=color)
+    @classmethod
+    async def set_color(cls,my_id: int, opponent_id:int, color) -> None:
+        opponent_state = cls.__get_opponent_state(opponent_id)
+        opponent_data = await opponent_state.get_data()
+        if cls.__rights_checking(my_id, opponent_data):
+            await opponent_state.update_data(color=color)
 
-    async def set_game(self, username: str, game) -> None:
-        if self.__rights_checking(username):
-            await self.__opponent_state.update_data(game=game)
-
-    async def set_opponent_state(self, username: str, opponent_state: FSMContext) -> None:
-        if self.__rights_checking(username):
-            await self.__opponent_state.update_data(opponent_state=secure_state(opponent_state))
-
-    async def transition_to_reconnecting(self, username: str) -> None:
-        if self.__rights_checking(username):
-            await transition_to_reconnecting(self.__opponent_state)
+    @classmethod
+    async def set_game(cls,my_id: int, opponent_id:int, game) -> None:
+        opponent_state = cls.__get_opponent_state(opponent_id)
+        opponent_data = await opponent_state.get_data()
+        if cls.__rights_checking(my_id, opponent_data):
+            await opponent_state.update_data(game=game)

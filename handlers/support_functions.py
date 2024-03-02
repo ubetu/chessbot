@@ -1,32 +1,14 @@
-import os
-
-from bot_creating import bot
-from aiogram.fsm.context import FSMContext
+from helpful.bot_creating import bot
 from chess_api import GameManager
-from aiogram.filters import BaseFilter
+from aiogram.types import BufferedInputFile
 
-class IsOurMove(BaseFilter):
-    def __init__(self, state: FSMContext):
-        self.user_data = await state.get_data()
-
-    def __call__(self):
-        game: GameManager = self.user_data['game']
-        our_color = self.user_data['color']
-        if game.is_our_turn(our_color):
-            return {'game': game}
-        return False
-
-
-async def send_board_photo(my_username: str, opponent_username: str, state: FSMContext) -> None:
+async def send_board_photo(my_id: int, opponent_id: int, game: GameManager) -> None:
     """Отправляет картинку шахматного поля по user_id.
        Можно предавать state Любого из 2 игроков"""
 
-    user_data = await state.get_data()
-    photo_bytes = user_data['game'].create_image()
-    photo_url = my_username + '.png'
+    photo_bytes = game.create_image()
+    photo_url = str(my_id) + '.png'
 
-    with open(photo_url, 'wb') as photo:
-        photo.write(photo_bytes)
-        await bot.send_photo(chat_id=my_username, photo=photo_url)
-        await bot.send_photo(chat_id=opponent_username, photo=photo_url)
-    os.remove(photo_url)
+    photo = BufferedInputFile(photo_bytes, photo_url)
+    await bot.send_photo(chat_id=my_id, photo=photo)
+    await bot.send_photo(chat_id=opponent_id, photo=photo)

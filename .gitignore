@@ -1,1 +1,2 @@
-conf.env
+config/.env
+database/chess.db
