@@ -1,10 +1,11 @@
-from helpful import kb, text
+import kb
+import text
 import chess_api
 from database.db import db
 
-from helpful.bot_creating import bot
+from bot_creating import bot
 from state import GameFSM, Protect_state
-from helpful.kb import ConnectionCallback
+from kb import ConnectionCallback
 from handlers.support_functions import send_board_photo
 
 from aiogram import types, Router
@@ -29,6 +30,7 @@ async def asking_to_connect_try(message:Message, state:FSMContext):
 
 @router_connection.callback_query(ConnectionCallback.filter())
 async def answering_to_connect_try(callback:types.CallbackQuery, callback_data:ConnectionCallback, state:FSMContext):
+    await state.clear()
     my_id, opponent_id = callback.from_user.id, callback_data.opponent_id
 
     if callback_data.answer == 'No':

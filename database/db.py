@@ -2,7 +2,7 @@ import sqlite3
 
 def connection_wrapper(func):
     def inner(*args):
-        conn = sqlite3.connect(database='chess.db')
+        conn = sqlite3.connect(database='database/chess.db')
         cursor = conn.cursor()
         result = func(*args, cursor=cursor, conn=conn)
         cursor.close()
@@ -29,6 +29,6 @@ class db:
     @connection_wrapper
     def write_game_results(white_id: int, black_id: int, result: int, cursor, conn) -> None:
         """result in (-1, 0, 1) notation"""
-        cursor.execute("""INSERT INTO games
+        cursor.execute("""INSERT INTO game (white_id, black_id, result)
         VALUES (?, ?, ?)""", (white_id, black_id, result))
         conn.commit()

@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from helpful.bot_creating import bot, dp
+from bot_creating import bot, dp
 from handlers import router_main, router_connection, router_playing
 async def main():
     dp.include_routers(router_main, router_connection, router_playing)

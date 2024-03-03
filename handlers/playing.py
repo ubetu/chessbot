@@ -1,6 +1,6 @@
 from database.db import db
-from helpful import text
-from helpful.bot_creating import bot
+import text
+from bot_creating import bot
 from handlers.support_functions import send_board_photo
 from chess_api import GameManager
 
@@ -24,7 +24,7 @@ async def move_reaction(message:Message, state:FSMContext):
             game.do_move(message.text)
 
             await send_board_photo(my_id, opponent_id, game)
-            await bot.send_message(chat_id=opponent_id, text=message)# повторяем ход в чат противника
+            await bot.send_message(chat_id=opponent_id, text=message.text)# повторяем ход в чат противника
 
         else:
             await message.answer(text.incorrect_move)
@@ -47,7 +47,7 @@ async def move_reaction(message:Message, state:FSMContext):
 
         #очищаем наш state и state оппонента
         await state.clear()
-        await Protect_state.clear(message.from_user.id, user_data['id'])
+        await Protect_state.clear(my_id, opponent_id)
 
         await message.answer(text=result_text_we)
         await bot.send_message(chat_id=opponent_id, text=result_text_opponent)

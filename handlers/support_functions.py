@@ -1,4 +1,4 @@
-from helpful.bot_creating import bot
+from bot_creating import bot
 from chess_api import GameManager
 from aiogram.types import BufferedInputFile
 
